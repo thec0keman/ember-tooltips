@@ -2,11 +2,11 @@
 
 import Ember from 'ember';
 import layout from '../templates/components/ember-tooltip-base';
+import config from 'ember-get-config';
 
 const {
   $,
   computed,
-  getOwner,
   run,
   warn,
   Component,
@@ -296,8 +296,8 @@ export default Component.extend({
 
       try {
         run(() => {
-          const config = getOwner(this).resolveRegistration('config:environment');
-          const rootElement = document.querySelector(config.APP.rootElement);
+          const rootElementName = config.APP.rootElement || config.rootElement;
+          const rootElement = document.querySelector(rootElementName);
           const target = this.get('target');
           const tooltipClassName = this.get('tooltipClassName');
           const tooltipContent = this.get('text') || '<span></span>';
