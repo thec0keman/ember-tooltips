@@ -6,7 +6,6 @@ module.exports = {
 
   options: {
     nodeAssets: {
-
       'popper.js': {
         vendor: {
           srcDir: 'dist/umd',
@@ -31,5 +30,4 @@ module.exports = {
     app.import('vendor/popper/popper.js');
     app.import('vendor/popper/tooltip.js');
   },
-
 };
