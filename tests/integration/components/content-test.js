@@ -4,6 +4,7 @@ import {
   afterTooltipRenderChange,
   assertTooltipContent,
 } from 'dummy/tests/helpers/ember-tooltips';
+import wait from 'ember-test-helpers/wait';
 
 moduleForComponent('ember-tooltip', 'Integration | Option | content', {
   integration: true,
@@ -33,9 +34,12 @@ test('assertTooltipContent correctly matches expected tootltip content for block
     {{/ember-tooltip}}
   `);
 
-  afterTooltipRenderChange(assert, () => {
-    assertTooltipContent(assert, {
-      contentString: 'foo',
+  return wait().then(() => {
+    console.log(this.$()[0]);
+    afterTooltipRenderChange(assert, () => {
+      assertTooltipContent(assert, {
+        contentString: 'foo',
+      });
     });
   });
 });

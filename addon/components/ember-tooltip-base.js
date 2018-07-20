@@ -77,8 +77,8 @@ export default Component.extend({
 
   /* Actions */
 
-  onDestroy: null,
   onHide: null,
+  onDestroy: null,
   onRender: null,
   onShow: null,
 
@@ -208,7 +208,9 @@ export default Component.extend({
 
     run(this.get('_tooltip').dispose);
 
-    this.sendAction('onDestroy', this);
+    if (!this.isDestroyed && !this.isDestroying) {
+      this.sendAction('onDestroy', this);
+    }
   },
 
   addTargetEventListeners() {
@@ -296,6 +298,7 @@ export default Component.extend({
 
       try {
         run(() => {
+          const side = this.get('side') || 'top';
           const rootElementName = config.APP.rootElement || config.rootElement;
           const rootElement = document.querySelector(rootElementName);
           const target = this.get('target');
@@ -304,10 +307,10 @@ export default Component.extend({
           const tooltip = new Tooltip(target, {
             container: rootElement || false,
             html: true,
-            placement: this.get('side'),
+            placement: side,
             title: tooltipContent,
             trigger: 'manual',
-            template: `<div class="tooltip ${tooltipClassName} ember-tooltip-effect-${this.get('effect')}" role="tooltip" style="margin-${getOppositeSide(this.get('side'))}:${this.get('spacing')}px;">
+            template: `<div class="tooltip ${tooltipClassName} ember-tooltip-effect-${this.get('effect')}" role="tooltip" style="margin-${getOppositeSide(side)}:${this.get('spacing')}px;">
                         <div class="tooltip-arrow ember-tooltip-arrow"></div>
                         <div class="tooltip-inner" id="${this.get('wormholeId')}"></div>
                        </div>`,
@@ -335,15 +338,13 @@ export default Component.extend({
                   run.scheduleOnce('afterRender', () => {
                     const popperInstance = tooltipData.instance;
 
+                    this.setSpacing();
+
                     popperInstance.state.updateBound();
                   });
 
                   resolve(tooltipData);
                 });
-              },
-
-              onUpdate: () => {
-                this.setSpacing();
               },
             },
           });
@@ -380,8 +381,6 @@ export default Component.extend({
     style.marginLeft = 0;
 
     popper.style[`margin${capitalize(marginSide)}`] = `${this.get('spacing')}px`;
-
-    popperInstance.state.updateBound();
   },
 
   hide() {
@@ -470,8 +469,9 @@ export default Component.extend({
     }
 
     run.later(() => {
-      if (_tooltip.popperInstance)
+      if (_tooltip.popperInstance) {
         _tooltip.popperInstance.popper.classList.remove(ANIMATION_CLASS);
+      }
 
       if (this.get('isDestroying')) {
         return;
@@ -535,9 +535,7 @@ export default Component.extend({
     /* Add the event listeners */
 
     run(() => {
-      target.addEventListener(eventName, (event) => {
-        callback(event);
-      });
+      target.addEventListener(eventName, callback);
     });
   },
 
