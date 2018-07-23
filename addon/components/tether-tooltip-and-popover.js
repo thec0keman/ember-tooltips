@@ -499,10 +499,8 @@ export default EmberTetherComponent.extend({
     }
   },
 
-  willDestroy() {
-
+  willDestroyElement() {
     /* There's no jQuery when running in Fastboot */
-
     const $target = $ && $(this.get('target'));
 
     this.set('effect', null);
@@ -515,7 +513,9 @@ export default EmberTetherComponent.extend({
 
     this._super(...arguments); // Removes tether
 
-    this.sendAction('onDestroy', this);
+    if (!this.isDestroyed && !this.isDestroying) {
+      this.sendAction('onDestroy', this);
+    }
   },
 
   startTether() {
